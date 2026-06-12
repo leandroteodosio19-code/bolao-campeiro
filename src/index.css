@@ -2,104 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================================
+   Bolão da Copa 2026 — Design System
+   Paleta: verde campo, dourado, azul escuro profundo, off-white
+   Todos os tokens em HSL.
+   ============================================================ */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Tema escuro como padrão (azul escuro profundo) */
+    --background: 215 60% 8%;            /* #0A1628 */
+    --foreground: 48 33% 96%;            /* #F5F5F0 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 215 50% 12%;
+    --card-foreground: 48 33% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 215 50% 11%;
+    --popover-foreground: 48 33% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Verde campo */
+    --primary: 124 56% 24%;              /* #1B5E20 */
+    --primary-foreground: 48 33% 96%;
+    --primary-glow: 124 56% 38%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Dourado (medalha de ouro) */
+    --secondary: 51 100% 50%;            /* #FFD700 */
+    --secondary-foreground: 215 60% 8%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 215 35% 18%;
+    --muted-foreground: 215 15% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 215 60% 8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 48 33% 96%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 124 56% 38%;
+    --success-foreground: 48 33% 96%;
 
-    --radius: 0.5rem;
+    --warning: 38 95% 55%;
+    --warning-foreground: 215 60% 8%;
 
-    --sidebar-background: 0 0% 98%;
+    --border: 215 35% 20%;
+    --input: 215 35% 18%;
+    --ring: 51 100% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --radius: 0.875rem;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Medalhas */
+    --gold: 51 100% 50%;
+    --silver: 0 0% 75%;
+    --bronze: 28 70% 50%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Gradientes */
+    --gradient-pitch: linear-gradient(135deg, hsl(124 56% 18%) 0%, hsl(124 56% 28%) 100%);
+    --gradient-night: linear-gradient(160deg, hsl(215 60% 10%) 0%, hsl(215 55% 14%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(48 100% 55%) 0%, hsl(38 100% 50%) 100%);
+    --gradient-hero: radial-gradient(ellipse at top, hsl(124 56% 24% / 0.35), transparent 60%), linear-gradient(180deg, hsl(215 60% 8%) 0%, hsl(215 55% 12%) 100%);
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Sombras */
+    --shadow-card: 0 10px 30px -10px hsl(215 80% 4% / 0.6);
+    --shadow-gold: 0 8px 24px -8px hsl(51 100% 50% / 0.45);
+    --shadow-pitch: 0 12px 32px -12px hsl(124 56% 10% / 0.7);
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  /* Mesma paleta no modo claro forçado (mantemos tema único escuro) */
+  .light {
+    --background: 48 33% 96%;
+    --foreground: 215 60% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 60% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 60% 8%;
+    --primary: 124 56% 24%;
+    --primary-foreground: 48 33% 96%;
+    --secondary: 51 100% 50%;
+    --secondary-foreground: 215 60% 8%;
+    --muted: 48 20% 90%;
+    --muted-foreground: 215 30% 30%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 215 60% 8%;
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 48 33% 96%;
+    --border: 48 20% 85%;
+    --input: 48 20% 88%;
+    --ring: 124 56% 24%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  * { @apply border-border; }
+  html, body, #root { @apply h-full; }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-image: var(--gradient-hero);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, .font-display {
+    font-family: 'Bebas Neue', 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+  }
+}
+
+@layer components {
+  .pitch-card {
+    background: var(--gradient-pitch);
+    box-shadow: var(--shadow-pitch);
+  }
+  .gold-chip {
+    background: var(--gradient-gold);
+    color: hsl(var(--secondary-foreground));
+    box-shadow: var(--shadow-gold);
+  }
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-md border border-border/60 rounded-2xl;
+    box-shadow: var(--shadow-card);
+  }
+  .stripe-bg {
+    background-image: repeating-linear-gradient(
+      90deg,
+      hsl(124 56% 22%) 0 40px,
+      hsl(124 56% 26%) 40px 80px
+    );
   }
 }
