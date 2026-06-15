@@ -1,23 +1,94 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { matchService } from "@/services/matchService";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MockMatchesBanner } from "./MockMatchesBanner";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw, Calculator, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-export function PoolAdminPanel({ poolId: _poolId }: { poolId: string }) {
+export function PoolAdminPanel({ poolId }: { poolId: string }) {
   const qc = useQueryClient();
   const { data: matches, isLoading } = useQuery({ queryKey: ["matches"], queryFn: matchService.listAll });
 
+  const { data: lastSync } = useQuery({
+    queryKey: ["external_api_logs", "last"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("external_api_logs" as any)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      return (data ?? []) as any[];
+    },
+  });
+
+  const syncNow = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("sync-worldcup-matches", { body: {} });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (res: any) => {
+      toast.success(res?.message ?? "Sincronização concluída.");
+      qc.invalidateQueries({ queryKey: ["external_api_logs", "last"] });
+      qc.invalidateQueries({ queryKey: ["matches"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Falha ao sincronizar"),
+  });
+
+  const recalcRanking = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc("admin_recalculate_pool_ranking" as any, { _pool_id: poolId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Ranking recalculado.");
+      qc.invalidateQueries({ queryKey: ["ranking", poolId] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Falha ao recalcular"),
+  });
+
   if (isLoading) return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-secondary" /></div>;
+
+  const latest = lastSync?.[0];
 
   return (
     <div className="space-y-4">
       <MockMatchesBanner />
+
+      <div className="glass-card p-5">
+        <h2 className="font-display text-xl tracking-wide mb-3">FERRAMENTAS DO ADMIN</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" variant="outline" onClick={() => syncNow.mutate()} disabled={syncNow.isPending}>
+            {syncNow.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+            Sincronizar jogos agora
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => recalcRanking.mutate()} disabled={recalcRanking.isPending}>
+            {recalcRanking.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Calculator className="mr-2 h-4 w-4" />}
+            Recalcular ranking
+          </Button>
+        </div>
+        <div className="mt-3 text-xs text-muted-foreground">
+          {latest ? (
+            <>Última sincronização: <strong className="text-foreground">{format(new Date(latest.created_at), "dd/MM HH:mm", { locale: ptBR })}</strong> · {latest.provider} · {latest.status}</>
+          ) : (
+            <>Nenhuma sincronização registrada ainda.</>
+          )}
+        </div>
+        {lastSync && lastSync.some((l) => l.status === "not_configured" || l.error_message) && (
+          <div className="mt-3 flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 p-2 text-xs">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
+            <div>
+              Integração externa ainda não configurada. Resultados continuam editáveis manualmente abaixo.
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="glass-card p-5">
         <h2 className="font-display text-2xl tracking-wide mb-1">ADMINISTRAÇÃO DOS JOGOS</h2>
         <p className="text-xs text-muted-foreground mb-4">Defina o placar final de cada partida. Ao marcar como finalizada, os pontos são calculados e o ranking é atualizado automaticamente em tempo real.</p>
