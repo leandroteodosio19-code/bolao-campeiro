@@ -65,6 +65,36 @@ export type Database = {
           },
         ]
       }
+      external_api_logs: {
+        Row: {
+          created_at: string
+          endpoint: string | null
+          error_message: string | null
+          id: string
+          provider: string
+          response_summary: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          provider: string
+          response_summary?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          provider?: string
+          response_summary?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       match_points: {
         Row: {
           calculated_at: string
@@ -112,6 +142,44 @@ export type Database = {
             columns: ["pool_id"]
             isOneToOne: false
             referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_sync_status: {
+        Row: {
+          external_match_id: string | null
+          id: string
+          last_status: string | null
+          last_synced_at: string | null
+          match_id: string
+          sync_error: string | null
+          updated_at: string
+        }
+        Insert: {
+          external_match_id?: string | null
+          id?: string
+          last_status?: string | null
+          last_synced_at?: string | null
+          match_id: string
+          sync_error?: string | null
+          updated_at?: string
+        }
+        Update: {
+          external_match_id?: string | null
+          id?: string
+          last_status?: string | null
+          last_synced_at?: string | null
+          match_id?: string
+          sync_error?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_sync_status_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: true
+            referencedRelation: "matches"
             referencedColumns: ["id"]
           },
         ]
@@ -445,6 +513,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_recalculate_pool_ranking: {
+        Args: { _pool_id: string }
+        Returns: undefined
+      }
       calculate_match_points: {
         Args: { _match_id: string }
         Returns: undefined
