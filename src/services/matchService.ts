@@ -16,6 +16,8 @@ export const matchService = {
     winner_team_id?: string | null;
     status?: "scheduled" | "live" | "finished" | "postponed" | "cancelled";
   }) {
+    console.log("[finalizeMatch] matchId", matchId);
+    console.log("[finalizeMatch] payload", payload);
     const { data, error } = await supabase
       .from("matches")
       .update({
@@ -26,8 +28,17 @@ export const matchService = {
       })
       .eq("id", matchId)
       .select()
-      .single();
-    if (error) throw error;
+      .maybeSingle();
+    console.log("[finalizeMatch] queryResult", data);
+    if (error) {
+      console.error("[finalizeMatch] error", error);
+      throw error;
+    }
+    if (!data) {
+      const msg = "Sem permissão para atualizar este jogo (ou jogo inexistente).";
+      console.error("[finalizeMatch] error", msg);
+      throw new Error(msg);
+    }
     return data;
   },
 };
