@@ -263,6 +263,47 @@ export type Database = {
           },
         ]
       }
+      pool_join_requests: {
+        Row: {
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          message: string | null
+          pool_id: string
+          requested_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          message?: string | null
+          pool_id: string
+          requested_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          message?: string | null
+          pool_id?: string
+          requested_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pool_join_requests_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pool_members: {
         Row: {
           id: string
@@ -521,6 +562,10 @@ export type Database = {
         Args: { _match_id: string }
         Returns: undefined
       }
+      decide_join_request: {
+        Args: { _approve: boolean; _request_id: string }
+        Returns: undefined
+      }
       generate_invite_code: { Args: never; Returns: string }
       get_pool_by_invite_code: {
         Args: { _code: string }
@@ -553,6 +598,15 @@ export type Database = {
       recalculate_rankings_for_match: {
         Args: { _match_id: string }
         Returns: undefined
+      }
+      request_join_pool: {
+        Args: { _code: string; _message?: string }
+        Returns: {
+          pool_id: string
+          pool_name: string
+          request_id: string
+          status: string
+        }[]
       }
     }
     Enums: {
