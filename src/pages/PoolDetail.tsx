@@ -9,6 +9,7 @@ import { MatchesList } from "@/components/MatchesList";
 import { RankingTable } from "@/components/RankingTable";
 import { BonusForm } from "@/components/BonusForm";
 import { PoolAdminPanel } from "@/components/PoolAdminPanel";
+import { InvitePanel } from "@/components/InvitePanel";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
