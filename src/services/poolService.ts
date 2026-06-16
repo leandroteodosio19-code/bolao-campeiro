@@ -26,18 +26,35 @@ export const poolService = {
     return data;
   },
 
-  async joinByCode(code: string, userId: string) {
+  async joinByCode(code: string, _userId: string) {
     const normalized = code.trim().toUpperCase();
-    const { data: pool, error: rpcErr } = await supabase
-      .rpc("get_pool_by_invite_code" as any, { _code: normalized });
-    if (rpcErr) throw rpcErr;
-    const found = Array.isArray(pool) ? pool[0] : pool;
-    if (!found) throw new Error("Código inválido. Verifique e tente novamente.");
-    const { error: insErr } = await supabase
-      .from("pool_members")
-      .insert({ pool_id: found.id, user_id: userId, role: "member" });
-    if (insErr && !insErr.message.includes("duplicate")) throw insErr;
-    return found;
+    const { data, error } = await supabase.rpc("request_join_pool" as any, { _code: normalized, _message: null });
+    if (error) throw error;
+    const row: any = Array.isArray(data) ? data[0] : data;
+    if (!row) throw new Error("Código inválido. Verifique e tente novamente.");
+    return { id: row.pool_id, name: row.pool_name, status: row.status as "pending" | "already_member" };
+  },
+
+  async listJoinRequests(poolId: string) {
+    const { data: reqs, error } = await supabase
+      .from("pool_join_requests" as any)
+      .select("id, user_id, status, message, requested_at, decided_at")
+      .eq("pool_id", poolId)
+      .eq("status", "pending")
+      .order("requested_at", { ascending: true });
+    if (error) throw error;
+    const userIds = (reqs ?? []).map((r: any) => r.user_id);
+    let profMap = new Map<string, any>();
+    if (userIds.length) {
+      const { data: profs } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds);
+      profMap = new Map((profs ?? []).map((p) => [p.id, p]));
+    }
+    return (reqs ?? []).map((r: any) => ({ ...r, profile: profMap.get(r.user_id) ?? null }));
+  },
+
+  async decideJoinRequest(requestId: string, approve: boolean) {
+    const { error } = await supabase.rpc("decide_join_request" as any, { _request_id: requestId, _approve: approve });
+    if (error) throw error;
   },
 
   async getById(id: string) {
