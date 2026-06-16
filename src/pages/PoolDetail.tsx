@@ -60,6 +60,7 @@ const PoolDetail = () => {
           <BonusForm poolId={pool.id} />
         </TabsContent>
         <TabsContent value="more" className="mt-4 space-y-4">
+          {isAdmin && <InvitePanel poolId={pool.id} poolName={pool.name} inviteCode={pool.invite_code} />}
           {isAdmin && <PoolAdminPanel poolId={pool.id} />}
           <div className="glass-card p-5">
             <div className="flex items-center gap-2 mb-3"><Users className="h-5 w-5 text-secondary" /><h2 className="font-display text-xl tracking-wide">MEMBROS</h2></div>
