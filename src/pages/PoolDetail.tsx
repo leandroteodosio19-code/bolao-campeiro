@@ -34,7 +34,7 @@ const PoolDetail = () => {
 
   const me = members?.find((m: any) => m.user_id === user?.id);
   const isPoolAdmin = me?.role === "owner" || me?.role === "admin";
-  const isAdmin = isPoolAdmin || isGlobalAdmin;
+  const showAdminTab = isPoolAdmin || isGlobalAdmin;
 
   const copyCode = () => {
     navigator.clipboard.writeText(pool.invite_code);
