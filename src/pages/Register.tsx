@@ -22,10 +22,11 @@ const Register = () => {
     e.preventDefault();
     if (password.length < 6) return toast.error("A senha precisa ter ao menos 6 caracteres.");
     setLoading(true);
-    const { error } = await signUpWithEmail(email, password, name);
+    const { error, needsConfirmation } = await signUpWithEmail(email, password, name);
     setLoading(false);
     if (error) toast.error(error);
-    else { toast.success("Cadastro realizado! Você já pode entrar."); navigate("/dashboard"); }
+    else if (needsConfirmation) toast.success("Cadastro realizado! Confirme seu e-mail antes de entrar.");
+    else { toast.success("Cadastro realizado!"); navigate("/dashboard"); }
   };
 
   const onGoogle = async () => {
