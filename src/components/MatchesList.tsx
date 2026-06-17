@@ -63,11 +63,31 @@ function MatchCard({ match, poolId, userId, myPrediction, allPredictions, onSave
   const [winner, setWinner] = useState<string | null>(myPrediction?.predicted_winner_team_id ?? null);
 
   const save = useMutation({
-    mutationFn: () => predictionService.upsert({
-      poolId, userId, matchId: match.id,
-      homeScore: parseInt(home), awayScore: parseInt(away),
-      winnerTeamId: match.is_knockout ? winner : null,
-    }),
+    mutationFn: () => {
+      const homeScore = Number(home);
+      const awayScore = Number(away);
+
+      if (!Number.isInteger(homeScore) || !Number.isInteger(awayScore)) {
+        throw new Error("Informe placares válidos.");
+      }
+
+      if (homeScore < 0 || awayScore < 0) {
+        throw new Error("Placar não pode ser negativo.");
+      }
+
+      if (match.is_knockout && !winner) {
+        throw new Error("Selecione o classificado da partida mata-mata.");
+      }
+
+      return predictionService.upsert({
+        poolId,
+        userId,
+        matchId: match.id,
+        homeScore,
+        awayScore,
+        winnerTeamId: match.is_knockout ? winner : null,
+      });
+    },
     onSuccess: () => { toast.success("Palpite salvo!"); onSaved?.(); },
     onError: (e: any) => toast.error(e.message),
   });
@@ -138,7 +158,7 @@ function MatchCard({ match, poolId, userId, myPrediction, allPredictions, onSave
 
       {!isLocked && (
         <div className="px-4 pb-4">
-          <Button onClick={() => save.mutate()} disabled={save.isPending || !home || !away} size="sm" className="w-full bg-primary hover:bg-primary/90">
+          <Button onClick={() => save.mutate()} disabled={save.isPending || home === "" || away === "" || (match.is_knockout && !winner)} size="sm" className="w-full bg-primary hover:bg-primary/90">
             {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {myPrediction ? "Atualizar palpite" : "Salvar palpite"}
           </Button>

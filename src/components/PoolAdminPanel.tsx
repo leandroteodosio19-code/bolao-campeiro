@@ -61,7 +61,7 @@ export function PoolAdminPanel({ poolId }: { poolId: string }) {
       <MockMatchesBanner />
 
       <div className="glass-card p-5">
-        <h2 className="font-display text-xl tracking-wide mb-3">FERRAMENTAS DO ADMIN</h2>
+        <h2 className="font-display text-xl tracking-wide mb-3">FERRAMENTAS DO ADMIN GLOBAL</h2>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" onClick={() => syncNow.mutate()} disabled={syncNow.isPending}>
             {syncNow.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
@@ -108,12 +108,29 @@ function AdminMatchRow({ match, onSaved }: any) {
   const [winner, setWinner] = useState<string | null>(match.winner_team_id ?? null);
 
   const save = useMutation({
-    mutationFn: () => matchService.updateResult(match.id, {
-      home_score: parseInt(home),
-      away_score: parseInt(away),
-      winner_team_id: match.is_knockout ? winner : null,
-      status: "finished",
-    }),
+    mutationFn: () => {
+      const homeScore = Number(home);
+      const awayScore = Number(away);
+
+      if (!Number.isInteger(homeScore) || !Number.isInteger(awayScore)) {
+        throw new Error("Informe placares válidos.");
+      }
+
+      if (homeScore < 0 || awayScore < 0) {
+        throw new Error("Placar não pode ser negativo.");
+      }
+
+      if (match.is_knockout && !winner) {
+        throw new Error("Selecione o classificado da partida mata-mata.");
+      }
+
+      return matchService.updateResult(match.id, {
+        home_score: homeScore,
+        away_score: awayScore,
+        winner_team_id: match.is_knockout ? winner : null,
+        status: "finished",
+      });
+    },
     onSuccess: () => { toast.success("Resultado registrado. Ranking atualizado em tempo real."); onSaved?.(); },
     onError: (e: any) => toast.error(e.message),
   });
@@ -140,7 +157,7 @@ function AdminMatchRow({ match, onSaved }: any) {
           <option value={match.away_team_id}>{match.away_team?.code}</option>
         </select>
       )}
-      <Button size="sm" onClick={() => save.mutate()} disabled={save.isPending || !home || !away} className="bg-primary hover:bg-primary/90">
+      <Button size="sm" onClick={() => save.mutate()} disabled={save.isPending || home === "" || away === "" || (match.is_knockout && !winner)} className="bg-primary hover:bg-primary/90">
         {save.isPending && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
         {match.status === "finished" ? "Atualizar" : "Finalizar"}
       </Button>
