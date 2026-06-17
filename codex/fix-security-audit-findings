@@ -1,0 +1,6 @@
+supabase/migrations/20260616195500_security_hardening.sql
+supabase/seed.sql
+.env.example
+src/pages/PoolDetail.tsx
+src/components/PoolAdminPanel.tsx
+src/services/matchService.ts
