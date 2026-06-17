@@ -58,7 +58,7 @@ const PoolDetail = () => {
           <TabsTrigger value="matches">Jogos</TabsTrigger>
           <TabsTrigger value="ranking">Ranking</TabsTrigger>
           <TabsTrigger value="bonus">Bônus</TabsTrigger>
-          <TabsTrigger value="more">{isAdmin ? "Admin" : "Membros"}</TabsTrigger>
+          <TabsTrigger value="more">{showAdminTab ? "Admin" : "Membros"}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="matches" className="mt-4">
