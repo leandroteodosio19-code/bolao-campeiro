@@ -15,7 +15,7 @@ const Landing = () => {
       <main className="container flex-1">
         <section className="py-12 md:py-20 text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-secondary/40 bg-secondary/10 px-3 py-1 text-xs font-medium text-secondary">
-            <Zap className="h-3.5 w-3.5" /> Sem apostas em dinheiro · 100% diversão entre amigos
+            <Zap className="h-3.5 w-3.5" /> Combine as regras do bolão com seu grupo antes do início dos jogos
           </div>
           <h1 className="mt-6 font-display text-5xl md:text-7xl leading-none tracking-wide">
             BOLÃO DA <span className="bg-gradient-to-br from-secondary to-amber-400 bg-clip-text text-transparent">COPA 2026</span>
